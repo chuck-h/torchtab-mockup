@@ -1,0 +1,27 @@
+# ref http://aegis.sourceforge.net/auug97.pdf
+# "Recursive Make Considered Harmful"
+# under construction
+
+include Makefile.inc
+
+MODULES	:= StepperMounts
+PLOTS = cpp-test.svg
+
+SRC :=
+SRC += $(patsubst %.svg, %.escad, $(PLOTS))
+include $(patsubst %, %/module.mk,$(MODULES))
+
+all: $(PLOTS) $(DIRS)
+  
+$(PLOTS): %.svg: %.escad
+	extopenscad $< $@
+
+cpp-test.escad: cpp-test.txt plate.escad StepperMounts/size34.escad
+	cpp -C -P $< -o $@
+
+.PHONY StepperMounts	
+StepperMounts:
+	cd StepperMounts && $(MAKE)
+	
+clean:
+	rm $(PLOTS)

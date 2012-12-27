@@ -1,5 +1,5 @@
 // cpp-test
-#include "size34.escad"
+#include "StepperMounts/size34.escad"
 #include "plate.escad"
 unit("in") {
   center_x = 2;

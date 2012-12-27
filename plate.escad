@@ -1,0 +1,7 @@
+plate_width = 4;
+plate_length = 6;
+module plate() {
+//  unit("in") {
+    square([plate_width,plate_length]);
+//  }
+}

@@ -1,0 +1,11 @@
+// cpp-test
+#include "size34.escad"
+#include "plate.escad"
+unit("in") {
+  center_x = 2;
+  center_y =2;
+  difference() {
+    plate();
+    translate([center_x, center_y]) size34_cutout();
+  }
+}

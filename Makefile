@@ -8,6 +8,7 @@ $(PLOTS): %.svg: %.escad
 	extopenscad $< $@
 
 cpp-test.escad: cpp-test.txt plate.escad StepperMounts/size34.escad
+#	$(MAKEDEPEND)
 	cpp -C -P $< -o $@
 
 clean:

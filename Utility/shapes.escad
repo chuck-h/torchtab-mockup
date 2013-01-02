@@ -1,0 +1,9 @@
+
+module slot(ptA, ptB, width) {
+  cline = ptB-ptA;
+  length = sqrt(cline[0]*cline[0] + cline[1]*cline[1]);
+  ang = 180/pi*atan2(cline[1], cline[0]);
+  translate((ptA+ptB)/2) {
+    rotate(ang) square([length+width,width],r=width/2, center=true);
+  }
+}

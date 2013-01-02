@@ -1,0 +1,23 @@
+// cpp-test
+#include "StepperMounts/size34.escad"
+#include "HardwareMounts/FlangedBush375.escad"
+#include "plate.escad"
+mmPerIn = 25.4;
+center_dist = 18;
+lip_width = 2;
+plate_length = center_dist+4;
+plate_width = lip_width+4;
+difference() {
+  unit("in") {
+    square([plate_length,plate_width]);
+  }
+  union() {
+    translate([2*mmPerIn, 4*mmPerIn]) size34_cutout();
+    translate([(2+center_dist)*mmPerIn, 4*mmPerIn]) SDPA7Z63FDU375_adjustable(0.375);
+    for (d= [0:plate_length-1]) {
+      translate([0.125+d,lip_width]*mmPerIn) slot([0,0]*mmPerIn,[0.75,0]*mmPerIn,0.125*mmPerIn);
+    }
+  }
+}
+
+$quality = 10;

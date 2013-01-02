@@ -4,24 +4,30 @@
 
 include Makefile.inc
 
-MODULES	:= StepperMounts
-PLOTS = cpp-test.svg
+MODULES	:= StepperMounts HardwareMounts
+PLOTS = part.svg
 
 SRC :=
-SRC += $(patsubst %.svg, %.escad, $(PLOTS))
+SRC += $(patsubst %.svg, %.esm, $(PLOTS))
 include $(patsubst %, %/module.mk,$(MODULES))
 
-all: $(PLOTS) $(DIRS)
+# determine the escad targets
+ESM2ESCADS := $(patsubst %.esm, %.escad, $(filter %.esm,$(SRC)))
+
+all: $(PLOTS)
+
+# include the cpp include dependencies
+include $(ESM2ESCADS:.escad=.d)
+
+# calculate C include dependencies
+%.d: %.esm
+	$(MAKEDEPEND)
   
 $(PLOTS): %.svg: %.escad
 	extopenscad $< $@
 
-cpp-test.escad: cpp-test.txt plate.escad StepperMounts/size34.escad
-	cpp -C -P $< -o $@
-
-.PHONY StepperMounts	
-StepperMounts:
-	cd StepperMounts && $(MAKE)
+$(ESM2ESCADS): %.escad: %.esm
+	cpp -C -P -E -I . $< -o $@
 	
 clean:
 	rm $(PLOTS)

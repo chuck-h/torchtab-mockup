@@ -1,0 +1,27 @@
+/* Mounting pattern for Stock Drive Products A 7Z63-FDU375 flanged bushing, 3/8 in */
+#include "Utility/shapes.escad"
+module SDPA7Z63FDU375_cutout() {
+  unit("in") {
+    clearance_dia = 11/16;
+    bolt_hole_spacing = 1.53;
+    hole_dia = 7/32;
+    union(r=0.125) {
+      circle(clearance_dia/2);
+      slot([-bolt_hole_spacing/2,0],[bolt_hole_spacing/2,0],hole_dia);
+    }
+  }
+}
+
+module SDPA7Z63FDU375_adjustable(adj) {
+  unit("in") {
+    clearance_dia = 11/16;
+    bolt_hole_spacing = 1.53;
+    hole_dia = 7/32;
+    union() {
+      slot([-adj/2,0],[adj/2,0],clearance_dia);
+      for (d = [-bolt_hole_spacing/2, bolt_hole_spacing/2]) {
+        slot([-adj/2,d],[adj/2,d],hole_dia);
+      }
+    }
+  }
+}

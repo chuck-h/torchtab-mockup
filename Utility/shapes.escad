@@ -7,3 +7,38 @@ module slot(ptA, ptB, width) {
     rotate(ang) square([length+width,width],r=width/2, center=true);
   }
 }
+
+module foldline(ptA, ptB, width=3, slotpitch=50, closed=true) {
+  webfrac = 0.1;
+  cline = ptB-ptA;
+  length = sqrt(cline[0]*cline[0] + cline[1]*cline[1]);
+  dir = cline/length;
+  n = floor(length/slotpitch);
+  if (n==0) {
+    length = length/(1+webfrac);
+    pitch = length;
+    n = 1;
+  } else {
+    length = length/(1+webfrac/n);
+    pitch = length/n;
+  }
+  union() {
+    for (i = [0 : n-1]) {
+      slot( ptA+((0.1+i)*pitch+width/2)*dir, ptA+((i+1)*pitch-width/2)*dir, width);
+    }
+  }
+}
+
+module foldUpTab(ptA, ptB, tabWidth, width=3, slotpitch=50) {
+  cline = ptB-ptA;
+  length = sqrt(cline[0]*cline[0] + cline[1]*cline[1]);
+  dir = cline/length;
+  perpdir = [-dir[1], dir[0]];
+  union() {
+    foldline(ptA, ptB, width=width, slotpitch=slotpitch);
+    slot(ptA-(width/2)*dir, ptA-(width/2)*dir + tabWidth*perpdir, width);
+    slot(ptB+(width/2)*dir, ptB+(width/2)*dir + tabWidth*perpdir, width);
+    slot(ptA-(width/2)*dir + tabWidth*perpdir, ptB+(width/2)*dir + tabWidth*perpdir, width);
+  }
+}
+

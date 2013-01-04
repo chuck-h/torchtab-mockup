@@ -1,2 +1,2 @@
 # module.mk file for Utility 
-# SRC += Utility/shapes.esm
+SRC += Utility/shapes.escad

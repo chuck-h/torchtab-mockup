@@ -4,7 +4,7 @@
 
 include Makefile.inc
 
-MODULES	:= StepperMounts HardwareMounts
+MODULES	:= StepperMounts HardwareMounts Utility
 PLOTS = part.svg
 
 SRC :=
@@ -29,5 +29,6 @@ $(PLOTS): %.svg: %.escad
 $(ESM2ESCADS): %.escad: %.esm
 	cpp -C -P -E -I . $< -o $@
 	
+# should clean remove everything that isn't in $(SRC)?
 clean:
 	rm $(PLOTS)

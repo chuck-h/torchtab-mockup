@@ -1,6 +1,6 @@
 /* size34.escad, units=inch */
 module size34_cutout() {
-//  unit("in") {
+  unit("in") {
     pilot_dia = 2.875+0.015;
     bolt_hole_spacing = 2.75;
     hole_dia = 0.21;
@@ -14,5 +14,5 @@ module size34_cutout() {
         }
       }
     }
-//  }
+  }
 }

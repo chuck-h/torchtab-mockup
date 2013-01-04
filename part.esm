@@ -1,4 +1,5 @@
-// cpp-test
+// cpp test part
+// gantry drive side rail
 #include "StepperMounts/size34.escad"
 #include "HardwareMounts/FlangedBush375.escad"
 #include "plate.escad"
@@ -12,12 +13,13 @@ difference() {
     square([plate_length,plate_width]);
   }
   union() {
-    translate([2*mmPerIn, 4*mmPerIn]) size34_cutout();
-    translate([(2+center_dist)*mmPerIn, 4*mmPerIn]) SDPA7Z63FDU375_adjustable(0.375);
-    for (d= [0:plate_length-1]) {
-      translate([0.125+d,lip_width]*mmPerIn) slot([0,0]*mmPerIn,[0.75,0]*mmPerIn,0.125*mmPerIn);
-    }
+    translate([2*mmPerIn, 4*mmPerIn]) size34_cutout(); // motor mount
+    translate([(2+center_dist)*mmPerIn, 4*mmPerIn]) SDPA7Z63FDU375_adjustable(0.375); // idler pulley mount
+    foldline([0,lip_width]*mmPerIn, [plate_length, lip_width]*mmPerIn); // L-fold
+    foldUpTab([4,lip_width+1.5]*mmPerIn, [8,lip_width+1.5]*mmPerIn, -0.75*mmPerIn); // home sensor flag
+    foldUpTab([4,lip_width+2.25]*mmPerIn, [6,lip_width+2.25]*mmPerIn, 0.75*mmPerIn); // limit sensor flag 1
+    foldUpTab([center_dist-2,lip_width+2.25]*mmPerIn, [center_dist,lip_width+2.25]*mmPerIn, 0.75*mmPerIn); // limit sensor flag 2
   }
 }
 
-$quality = 10;
+$quality = 20;

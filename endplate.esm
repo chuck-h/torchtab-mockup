@@ -1,0 +1,28 @@
+// gantry drive end plate
+#include "ttmockup.h"
+#include "Utility/shapes.escad"
+plate_length = endplate_span + 2*leg_width;
+plate_width = top_plate_height + endplate_upper_lip;
+notch_inset = [leg_width+0.125*mmPerIn, endplate_upper_lip+0.125*mmPerIn];
+difference() {
+  square([plate_length,plate_width]);
+  union() {
+    notch("TL", size=notch_inset, tipLoc=[notch_inset[0], plate_width-notch_inset[1]],r=3);
+    notch("TR", size=notch_inset, tipLoc=[plate_length-notch_inset[0], plate_width-notch_inset[1]],r=3);
+//    notch("B", size=[endplate_span-2*leg_width,0.25*mmPerIn], tip_Loc=[plate_length/2,0.25*mmPerIn]);
+    notch("B",size=[endplate_span-2*leg_width,0.5*mmPerIn], tipLoc=[plate_length/2,0.5*mmPerIn],r=0.4*mmPerIn);
+    for(xc = [leg_width+side_rail_top_width/2, plate_length-(leg_width+side_rail_top_width/2)]) {
+      slot([xc-0.125*mmPerIn, top_plate_height+0.5*mmPerIn],
+           [xc+0.125*mmPerIn, top_plate_height+0.5*mmPerIn], width=0.19*mmPerIn);
+    }
+    for(xc = [leg_width-0.5*mmPerIn, plate_length-(leg_width-0.5*mmPerIn)]) {
+      slot([xc, top_plate_height-side_rail_lip_width/2-0.125*mmPerIn],
+           [xc, top_plate_height-side_rail_lip_width/2+0.125*mmPerIn], width=0.19*mmPerIn);
+    }
+    foldline([notch_inset[0],plate_width-endplate_upper_lip], [plate_length-notch_inset[0], plate_width-endplate_upper_lip]); // top L-fold
+    foldline([leg_width,plate_width-notch_inset[1]], [leg_width,0]);
+    foldline([plate_length-leg_width,plate_width-notch_inset[1]], [plate_length-leg_width,0]);
+  }
+}
+
+$quality = 20;

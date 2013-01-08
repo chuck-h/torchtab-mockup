@@ -5,7 +5,7 @@
 include Makefile.inc
 
 MODULES	:= StepperMounts HardwareMounts Utility
-PLOTS = part.svg
+PLOTS = siderail.svg endplate.svg
 
 SRC :=
 SRC += $(patsubst %.svg, %.esm, $(PLOTS))

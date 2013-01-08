@@ -1,0 +1,31 @@
+// gantry drive side rail
+#include "StepperMounts/size34.escad"
+#include "HardwareMounts/FlangedBush375.escad"
+#include "ttmockup.h"
+center_dist = x_drive_center_dist;
+lip_width = side_rail_lip_width;
+plate_length = side_rail_length;
+plate_width = lip_width+side_rail_top_width;
+drive_center_y = plate_width-0.5*side_rail_top_width;
+home_flag_y = drive_center_y-1.0*mmPerIn;
+limit_flag_y = drive_center_y+0.75*mmPerIn;
+leg_hole_y = lip_width/2;
+
+difference() {
+  square([plate_length,plate_width]);
+  union() {
+    translate([3*mmPerIn, drive_center_y]) size34_cutout(); // motor mount
+    translate([3*mmPerIn+center_dist, drive_center_y]) SDPA7Z63FDU375_adjustable(0.375); // idler pulley mount
+    // endplate screw holes:
+    slot([0.375*mmPerIn,drive_center_y],[0.625*mmPerIn,drive_center_y],width=0.19*mmPerIn); 
+    slot([plate_length-0.375*mmPerIn,drive_center_y],[plate_length-0.625*mmPerIn,drive_center_y],width=0.19*mmPerIn); 
+    slot([0.375*mmPerIn,leg_hole_y],[0.625*mmPerIn,leg_hole_y],width=0.19*mmPerIn); 
+    slot([plate_length-0.375*mmPerIn,leg_hole_y],[plate_length-0.625*mmPerIn,leg_hole_y],width=0.19*mmPerIn); 
+    foldline([0,lip_width], [plate_length, lip_width]); // L-fold
+    foldUpTab([5*mmPerIn,home_flag_y], [9*mmPerIn,home_flag_y], 0.75*mmPerIn); // home sensor flag
+    foldUpTab([5*mmPerIn,limit_flag_y], [7*mmPerIn,limit_flag_y], 0.75*mmPerIn); // limit sensor flag 1
+    foldUpTab([center_dist,limit_flag_y], [center_dist+2*mmPerIn,limit_flag_y], 0.75*mmPerIn); // limit sensor flag 2
+  }
+}
+
+$quality = 20;

@@ -1,3 +1,7 @@
+#ifndef MATL_THICKNESS
+#define MATL_THICKNESS 1.5 // 1.5mm = 16 gauge steel
+#endif
+#define BEND_RATIO 0.1 // setback of tangent point from slot as frac of thickness
 
 module slot(ptA, ptB, width) {
   cline = ptB-ptA;
@@ -9,36 +13,82 @@ module slot(ptA, ptB, width) {
 }
 
 module foldline(ptA, ptB, width=3, slotpitch=50, closed=true) {
-  webfrac = 0.1;
+  webfrac = 1.0; // web width as fraction of slot width
   cline = ptB-ptA;
   length = sqrt(cline[0]*cline[0] + cline[1]*cline[1]);
   dir = cline/length;
   n = floor(length/slotpitch);
   if (n==0) {
-    length = length/(1+webfrac);
+    length = length-webfrac*width;
     pitch = length;
     n = 1;
   } else {
-    length = length/(1+webfrac/n);
+    length = length-webfrac*width;
     pitch = length/n;
   }
   union() {
     for (i = [0 : n-1]) {
-      slot( ptA+((0.1+i)*pitch+width/2)*dir, ptA+((i+1)*pitch-width/2)*dir, width);
+      slot( ptA+(i*pitch+webfrac*width+width/2)*dir, ptA+((i+1)*pitch-width/2)*dir, width);
     }
   }
 }
 
-module foldUpTab(ptA, ptB, tabWidth, width=3, slotpitch=50) {
-  cline = ptB-ptA;
+// fold orientation: facing from ptA to ptB, tab folds clockwise out of base plate to specified height
+module foldUpTab(tabPtA, tabPtB, tabHeight, width=3, slotpitch=50, thickness=MATL_THICKNESS) {
+  cline = tabPtB-tabPtA;
   length = sqrt(cline[0]*cline[0] + cline[1]*cline[1]);
   dir = cline/length;
   perpdir = [-dir[1], dir[0]];
+  // compute effect of metal deformation in bend
+  tangent_setback = BEND_RATIO*thickness;
+  nrad = (2/pi)*(width + 2*tangent_setback); // radius of neutral axis in bend
+  // offset of bent tab centerline from slot centerline
+  bendoffset = nrad-(width/2+tangent_setback);
+  ptA=tabPtA-perpdir*bendoffset;
+  ptB=tabPtB-perpdir*bendoffset;
+  // height of slot edge above base after bend
+  h = nrad-tangent_setback-thickness/2;
+  echo("h "); echo(h);
+  tabWidth = tabHeight-h;
   union() {
-    foldline(ptA, ptB, width=width, slotpitch=slotpitch);
-    slot(ptA-(width/2)*dir, ptA-(width/2)*dir + tabWidth*perpdir, width);
-    slot(ptB+(width/2)*dir, ptB+(width/2)*dir + tabWidth*perpdir, width);
-    slot(ptA-(width/2)*dir + tabWidth*perpdir, ptB+(width/2)*dir + tabWidth*perpdir, width);
+    foldline(ptA, ptB, width=width, slotpitch=slotpitch, closed=true);
+    slot(ptA-(width/2)*dir, ptA-(width/2)*dir + (tabWidth+width)*perpdir, width);
+    slot(ptB+(width/2)*dir, ptB+(width/2)*dir + (tabWidth+width)*perpdir, width);
+    slot(ptA-(width/2)*dir + (tabWidth+width)*perpdir, ptB+(width/2)*dir + (tabWidth+width)*perpdir, width);
   }
 }
 
+module notch(orientation="TL", size, tipLoc, r=0) {
+  if (orientation=="BL") {
+    square(x=[tipLoc[0]-(size[0]+1+r), tipLoc[0]],
+           y=[tipLoc[1]-(size[1]+1+r), tipLoc[1]],r=r);
+  }
+  if (orientation=="TL") {
+    square(x=[tipLoc[0]-(size[0]+1+r), tipLoc[0]],
+           y=[tipLoc[1], tipLoc[1]+(size[1]+1+r)],r=r);
+  }
+  if (orientation=="BR") {
+    square(x=[tipLoc[0], tipLoc[0]+(size[0]+1+r)],
+           y=[tipLoc[1]-(size[1]+1+r), tipLoc[1]],r=r);
+  }
+  if (orientation=="TR") {
+    square(x=[tipLoc[0], tipLoc[0]+(size[0]+1+r)],
+           y=[tipLoc[1], tipLoc[1]+(size[1]+1+r)],r=r);
+  }
+  if (orientation=="L") {
+    square(x=[tipLoc[0]-(size[0]+1+r), tipLoc[0]],
+           y=[tipLoc[1]-(size[1]/2), tipLoc[1]+(size[1]/2)],r=r);
+  }
+  if (orientation=="R") {
+    square(x=[tipLoc[0], tipLoc[0]+(size[0]+1+r)],
+           y=[tipLoc[1]-(size[1]/2), tipLoc[1]+(size[1]/2)],r=r);
+  }
+  if (orientation=="T") {
+    square(x=[tipLoc[0]-(size[0]/2), tipLoc[0]+(size[0]/2)],
+           y=[tipLoc[1], tipLoc[1]+(size[1]+1+r)],r=r);
+  }
+  if (orientation=="B") {
+    square(x=[tipLoc[0]-(size[0]/2), tipLoc[0]+(size[0]/2)],
+           y=[tipLoc[1]-(size[1]+1+r), tipLoc[1]],r=r);
+  }
+}
